@@ -74,7 +74,7 @@ footer:
       url                   : "https://github.com/nunomaia"
 
 analytics:
-  provider                  : "google"
+  provider                  : "google-universal"
   google:
     tracking_id             : "G-V4F2ZGX94E"
     anonymize_ip            : false # default 
