@@ -73,11 +73,13 @@ footer:
       icon                  : "fab fa-fw fa-github"
       url                   : "https://github.com/nunomaia"
 
-analytics:
-  provider                  : "google-universal"
-  google:
-    tracking_id             : "G-V4F2ZGX94E"
-    anonymize_ip            : false # default 
+#google_analytics: G-XXXXXXXXXY
+
+#analytics:
+#  provider                  : "google-universal"
+#  google:
+#    tracking_id             : "G-V4F2ZGX94E"
+#    anonymize_ip            : false # default 
 
 include:
   - _pages         
