@@ -1,6 +1,11 @@
 ---
 layout: single
 title:  Batch OData API in Dynamics 365 Finance and Operations using Power Automate
+tags:
+  - Power Automate
+  - D365FO
+categories:
+ - System Administration
 ---
 
 
@@ -10,7 +15,9 @@ Is only possible to requeue batch jobs that are in a terminal state. By taking a
 
 ## Requirement
 
-A custom exchange rate provider of Dynamics 365 depends on exchange rates exported from an external system. This system does not ensure an exact timeframe to export data. 
+A custom exchange rate provider of Dynamics 365 depends on exchange rates exported from an external system. Ability to retrieve exchange rates from an external service even the system does not provide an exact timeframe to export data. 
+
+## Resolution approach
 
 A possible approach can be scheduling a batch job several times a day. Eventually one of the runs would successfully import the file stored in a Microsoft One Drive folder.  
 
@@ -53,7 +60,15 @@ Save and active Power Automate Flow.
 ## Simulation
 
 Now let's validate the whole process.  
-Drop a file in OneDrive that triggers flow from Power Automate Flow. Open Batch Job History and confirm that Batch job was executed.
+1.  Drop a file in OneDrive that triggers flow from Power Automate Flow. 
+
+![!](/assets/images/posts/2021/1812_image9.png)
+
+2. Check Power Automate Flow Run Execution history
+
+![!](/assets/images/posts/2021/1812_image8.png)
+
+3. Open Batch Job History and confirm that Batch job was executed.
 
 
 ![!](/assets/images/posts/2021/1812_image7.png)

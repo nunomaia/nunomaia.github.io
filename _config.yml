@@ -81,6 +81,14 @@ footer:
 #    tracking_id             : "G-V4F2ZGX94E"
 #    anonymize_ip            : false # default 
 
+category_archive:
+  type: liquid
+  path: /categories/
+
+tag_archive:
+  type: liquid
+  path: /tags/
+
 include:
   - _pages         
 
