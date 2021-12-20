@@ -61,17 +61,16 @@ Save and active Power Automate Flow.
 
 Now let's validate the whole process.  
 1.  Drop a file in OneDrive that triggers flow from Power Automate Flow. 
-
-![!](/assets/images/posts/2021/1812_image9.png)
+    
+    ![!](/assets/images/posts/2021/1812_image9.png)
 
 2. Check Power Automate Flow Run Execution history
-
-![!](/assets/images/posts/2021/1812_image8.png)
+    
+    ![!](/assets/images/posts/2021/1812_image8.png)
 
 3. Open Batch Job History and confirm that Batch job was executed.
-
-
-![!](/assets/images/posts/2021/1812_image7.png)
+    
+    ![!](/assets/images/posts/2021/1812_image7.png)
 
 
 
