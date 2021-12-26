@@ -67,7 +67,7 @@ The next step, execute a simple test with the postman to validate that requests 
 2. Create a Get Request to https://lcsapi.lcs.dynamics.com/environmentinfo/v1/detail/project/{projectId}/?environmentId={environmentId}.
         
         Replace projectId and environmentId from LCS values.
-        
+
 3.  Paste token value from step 1.
 
     ![!](/assets/images/posts/2021/1227_image14.png)
@@ -326,7 +326,7 @@ Again, using RestSharp. Execute HTTP request to get environment detail.
 
 ````
 
-Feel free to leave a comment on twitter
+Feel free to leave a comment on twitter on [https://twitter.com/nmsmaia/status/1475194456664121354](https://twitter.com/nmsmaia/status/1475194456664121354)
 
  
 
