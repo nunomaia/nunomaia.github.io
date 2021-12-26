@@ -99,3 +99,7 @@ plugins:
   - jekyll-feed
   - jemoji
   - jekyll-include-cache
+
+exclude:
+  - local-server.bat
+  - local-server.sh
