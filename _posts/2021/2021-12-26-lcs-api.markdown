@@ -1,0 +1,358 @@
+---
+layout: single
+title:  Using X++ identify if a D365 F&O environment is production, Sandbox, etc. 
+tags:                                             
+  - D365FO, LCS
+categories:
+ - LCS, Lifecycle Services
+ - REST API 
+---
+
+After a database movement operation in Dynamics 365 Finance, it is a recurring task to execute custom routines or scripts to update settings, obfuscate data, etc. 
+
+For example, after a database copy from production to a sandbox, we might need to obfuscate tables or remove settings in Dynamics 365 Finance according to the environment in question. 
+
+To implement this dynamic behavior or even block the execution if erratically is deployed in production. We need dynamically determine the environment to execute proper actions ( Production, Sandbox, etc.) 
+
+The goal of this post is to identify the environment using X++. We will query Lifecycle Services (LCS) to get what type of environment that we are executing.      
+
+Lifecycle Services (LCS) is a Microsoft Dynamics portal to manage implementations of the Dynamics 365 Finance and Operations applications. LCS exposes a REST API to query environment metadata. This REST service has a rate limit. At the time of writing this post, LCS defines a limit of 6 calls per minute. Therefore, using this feature in routines that run frequently is not recommended.  
+
+## Setting app registration
+
+The first step is to create an app registration on Azure Active Directory.
+
+1. Open Azure Portal located in [https://portal.azure.com/](https://portal.azure.com/)
+2. Select the Azure Active Directory service.
+
+    ![!](/assets/images/posts/2021/1227_image2.png)
+
+3. Select App registrations.
+
+    ![!](/assets/images/posts/2021/1227_image1.png)
+
+4. Select "New registration"
+    
+    ![!](/assets/images/posts/2021/1227_image3.png)
+
+5. Enter a new Name and register the app.
+    
+    ![!](/assets/images/posts/2021/1227_image6.png)
+
+6. Select "API permissions".
+
+    ![!](/assets/images/posts/2021/1227_image5.png)
+
+7. Select "Add a permission".
+
+    ![!](/assets/images/posts/2021/1227_image8.png)    
+    
+8. Search for Dynamics Lifecycle services and add the user_impersonation permission to your app.
+
+    ![!](/assets/images/posts/2021/1227_image7.png)
+
+0. Select Certificates & secrets and define a new secret value for authentification.
+
+    ![!](/assets/images/posts/2021/1227_image9.png)
+
+
+## API using Postman
+
+The next step, execute a simple test with the postman to validate that requests are successful.
+
+1. Create a Post Request. Define variables according to your environment. After successfully generating credentials, copy the "access_token" value to reuse in the next step. 
+
+    ![!](/assets/images/posts/2021/1227_image11.png)
+
+2. Create a Get Request to https://lcsapi.lcs.dynamics.com/environmentinfo/v1/detail/project/{projectId}/?environmentId={environmentId}.
+        
+        Replace projectId and environmentId from LCS values.
+        
+3.  Paste token value from step 1.
+
+    ![!](/assets/images/posts/2021/1227_image14.png)
+
+4.  Define mandatory and fixed values of request.   
+
+    ![!](/assets/images/posts/2021/1227_image13.png)
+
+5. After submitting the request, you should get a similar JSON answer. The values that we need for now are IsSuccess and EnvironmentType.     
+
+````json
+
+{
+    "ResultPageCurrent": 1,
+    "ResultHasMorePages": true,
+    "Data": [
+        {
+            "EnvironmentId": "d15ed3a2c2c140547740b946c43915da3",
+            "EnvironmentName": "MainProdEnv",
+            "ProjectId": 123456,
+            "EnvironmentInfrastructure": "MicrosoftManaged",
+            "EnvironmentType": "Production",
+          ......
+        }
+    ],
+    "IsSuccess": true,
+}
+````
+
+
+## Implementing in X++
+
+Define simple utility functions to get current environment info.
+
+````csharp
+{
+    /// <summary>
+    /// get the environment information
+    /// </summary>
+    /// <returns></returns>
+    private static IApplicationEnvironment getEnvironment()
+    {
+        return EnvironmentFactory::GetApplicationEnvironment();
+    }
+
+    /// <summary>
+    /// get the tenant id
+    /// </summary>
+    /// <returns>tenant id</returns>
+    private static str getTenantId()
+    {
+        IApplicationEnvironment appEnvironment = LCSApiDemo::getEnvironment();
+        return appEnvironment.Aad.TenantDomainGUID;
+    }
+
+    /// <summary>
+    /// Gets the value for the lcs api endpoint setting from configuration
+    /// </summary>
+    /// <returns>LCS API endpoint</returns>
+    public static str getLcsApiEndpoint()
+    {
+        IApplicationEnvironment appEnvironment = LCSApiDemo::getEnvironment();
+        return appEnvironment.LCS.LCSAPIEndPoint;
+    }
+
+    /// <summary>
+    /// get the environment id
+    /// </summary>
+    /// <returns>returns the environment id web config value if set or empty string if not set</returns>
+    public static str getEnvironmentId()
+    {
+        IApplicationEnvironment appEnvironment = LCSApiDemo::getEnvironment();
+        return appEnvironment.LCS.LCSEnvironmentId;
+    }
+}
+````
+
+Create a class to deserialize JSON answer from OAuth. The main property to get is access token. 
+
+````csharp
+{
+  /// <summary>
+  /// OAuth Authentication Answer
+  /// </summary>
+  [DataContractAttribute]
+  public class LCSAuthenticationToken
+  {
+      str accessToken;
+      
+      /// <summary>
+      /// Authentication is successful
+      /// </summary>
+      /// <param name = "_accessToken"></param>
+      /// <returns></returns>
+      [DataMemberAttribute('access_token')]
+      public str parmAccessToken(str _accessToken = accessToken)
+      {
+          accessToken = _accessToken;
+          return accessToken;
+      }
+
+  }
+}
+````
+
+Using [RestSharp](https://restsharp.dev) a popular library to handle REST API's we will execute our HTTP requests.
+
+Out of the box, Postman can generate RestSharp code from a request by pressing "code". Let's adjust generated code to our needs.          
+
+````csharp
+{
+    /// <summary>
+    /// Get the Azure AD token
+    /// </summary>
+    /// <param name = "_clientId">Application Id</param>
+    /// <param name = "_secreat">Apllication secret</param>
+    /// <param name = "_username"></param>
+    /// <param name = "_password"></param>
+    /// <returns>Azure AD token</returns>
+    public LCSAuthenticationToken authentication(str _clientId, str _secreat, str _username, str _password)
+    {
+        str url = strFmt(authUrl, LCSApiDemo::getTenantId());
+        
+        RestClient restClient = new RestClient(url);
+
+        RestRequest request = new RestRequest(Method::POST);
+        request.AlwaysMultipartFormData = true;
+        request.AddParameter('grant_type', 'password');
+        request.AddParameter('client_id', _clientId);
+        request.AddParameter('client_secret', _secreat);
+        request.AddParameter('username', _username);
+        request.AddParameter('password', _password);
+        request.AddParameter('resource', LCSApiDemo::getLcsApiEndpoint());
+        
+        IRestResponse response = restClient.Execute(request);
+
+        LCSAuthenticationToken token =  FormJsonSerializer::deserializeObject(classNum(LCSAuthenticationToken), response.Content);
+
+        if (!token.parmAccessToken())
+        {
+            throw error("@ApplicationPlatform:OAuthCodeFailed");
+        }
+
+        return token;
+    }
+}
+````
+
+Implement contract classes to deserialize LCS environment info.    
+
+````csharp
+{
+  /// <summary>
+  /// Environment request answer
+  /// </summary>
+  [DataContractAttribute]
+  class LcsEnvironmentInfo
+  {
+      boolean isSuccess;
+      List environments;
+      
+      /// <summary>
+      /// if request was successful
+      /// </summary>
+      /// <param name = "_isSuccess"></param>
+      /// <returns></returns>
+      [DataMemberAttribute('IsSuccess')]
+      public boolean parmAccessToken(boolean _isSuccess = isSuccess)
+      {
+          isSuccess = _isSuccess;
+          return isSuccess;
+      }
+
+      /// <summary>
+      /// Environment data rows
+      /// </summary>
+      /// <param name = "_environments"></param>
+      /// <returns></returns>
+      [DataMemberAttribute('Data'), DataCollectionAttribute(Types::Class, classStr(LCSEnvironmentData))]
+      public List parmSOLines(List _environments = environments)
+      {
+          environments = _environments;
+          return environments;
+      }
+
+  }
+
+  /// <summary>
+  /// LCS Dynamics 365 Finance Environment Detail
+  /// </summary>
+  [DataContractAttribute]
+  class LCSEnvironmentDetail
+  {
+      str environmentId;
+      str environmentType;
+
+      /// <summary>
+      /// LCS Environment Id
+      /// </summary>
+      /// <param name = "_environmentId"></param>
+      /// <returns></returns>
+      [DataMemberAttribute('environmentId')]
+      public str paramEnvironmentId(str _environmentId = environmentId)
+      {
+          environmentId = _environmentId;
+          return environmentId;
+      }
+
+      /// <summary>
+      /// LCS Environment Type
+      /// </summary>
+      /// <param name = "_environmentType"></param>
+      /// <returns></returns>
+      [DataMemberAttribute('environmentType')]
+      public str parmAccessToken(str _environmentType = environmentType)
+      {
+          environmentType = _environmentType;
+          return environmentType;
+      }
+
+  }  
+}
+````
+
+Again, using RestSharp. Execute HTTP request to get environment detail. 
+
+````csharp
+{
+    /// <summary>
+    /// Get LCS Environment Info
+    /// </summary>
+    /// <param name = "_token">OAuth Token</param>
+    /// <param name = "_projectId">LCS Projecct ID</param>
+    /// <returns></returns>
+    public LCSEnvironmentInfo getEnvironmentInfo(LCSAuthenticationToken _token, str _projectId)
+    {
+        str url = strFmt('%1/environmentinfo/v1/detail/project/%2/?environmentId=%3', 
+            LCSApiDemo::getLcsApiEndpoint(),
+            _projectId, 
+            LCSApiDemo::getEnvironmentId());
+        
+        RestClient restClient = new RestClient(url);
+        RestRequest request = new RestRequest(Method::GET);
+        request.RequestFormat = RestSharp.DataFormat::Json;
+        request.AddHeader("Content-Type", "application/json");
+        request.AddHeader("x-ms-version", "2017-09-15");
+        request.AddHeader("Authorization", "Bearer " + _token.parmAccessToken());
+
+        IRestResponse response = restClient.Execute(request);
+
+        LCSEnvironmentInfo envInfo =  FormJsonSerializer::deserializeObject(classNum(LCSEnvironmentInfo), response.Content);
+
+        return envInfo;
+    }
+}
+
+````
+
+Feel free to leave a comment on twitter
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
