@@ -11,7 +11,7 @@ I was experiencing an error in a standard Dynamics 365 F&O class that source cod
 
 To decompile a class using [ILSpy](https://github.com/icsharpcode/ILSpy) or [Jet Brains dotPeek](https://www.jetbrains.com/decompiler/) is required to know the assembly file path in the file system.  
 
-For some objects are not straightforward to get matching assembly file. 
+For some objects is not straightforward to get matching assembly file. 
 
 Instead of browsing and expanding assemblies one by one, there is an easy way to get assembly for a class/table, etc.
 
