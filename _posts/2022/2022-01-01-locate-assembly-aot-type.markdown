@@ -11,11 +11,11 @@ I was experiencing an error in a standard Dynamics 365 F&O class that source cod
 
 I was experiencing an error in a standard Dynamics 365 F&O class that source code has not available.  I needed to understand class internal behavior by analyzing source code. 
 
-To decompile an assembly using [ILSpy](https://github.com/icsharpcode/ILSpy) or [Jet Brains dotPeek](https://www.jetbrains.com/decompiler/) is required to know the assembly file path in the file system.  
+To decompile a class using [ILSpy](https://github.com/icsharpcode/ILSpy) or [Jet Brains dotPeek](https://www.jetbrains.com/decompiler/) is required to know the assembly file path in the file system.  
 
-Some objects are not straightforward to get matching assembly file. 
+For some objects are not straightforward to get matching assembly file. 
 
-Instead of browsing and expanding assemblies one by one, there is a quick way of getting that information. There is an easy way to get assembly for a class/table, etc.
+Instead of browsing and expanding assemblies one by one, there is an easy way to get assembly for a class/table, etc.
 
 ````csharp
 public static void Main(Args _args)
