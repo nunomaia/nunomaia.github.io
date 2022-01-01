@@ -15,12 +15,6 @@ To decompile an assembly using [ILSpy](https://github.com/icsharpcode/ILSpy) or 
 
 Some objects are not straightforward to get matching assembly file. 
 
-There is an easy way to get assembly for a class / table, etc.
-
-
-I need to decompile class using [ILSpy](https://github.com/icsharpcode/ILSpy) or [Jet Brains dotPeek](https://www.jetbrains.com/decompiler/) to understand internal behavior and by analysing source code.  
-For that, I needed to discover corresponding assembly and where it was physically located, since objects are converted to .NET classes. 
-
 Instead of browsing and expanding assemblies one by one, there is a quick way of getting that information. There is an easy way to get assembly for a class/table, etc.
 
 ````csharp
