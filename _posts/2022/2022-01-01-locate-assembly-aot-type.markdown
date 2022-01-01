@@ -7,8 +7,6 @@ categories:
  - X++ 
 ---
 
-I was experiencing an error in a standard Dynamics 365 F&O class that source code has not available.
-
 I was experiencing an error in a standard Dynamics 365 F&O class that source code has not available.  I needed to understand class internal behavior by analyzing source code. 
 
 To decompile a class using [ILSpy](https://github.com/icsharpcode/ILSpy) or [Jet Brains dotPeek](https://www.jetbrains.com/decompiler/) is required to know the assembly file path in the file system.  
