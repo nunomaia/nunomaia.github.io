@@ -1,6 +1,6 @@
 ---
 layout: single
-title:  Locate .NET Assembly for a given type 
+title:  Locate .NET Assembly for a given type in X++ 
 tags:                                             
   - D365FO
 categories:
