@@ -8,7 +8,7 @@ baseurl                     : ""
 repository                  : "nunomaia/nunomaia.github.io" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes" 
 title                       : "Nuno Maia Dynamics 365 Blog"
 subtitle                    : "Finance - Supply Chain - Commerce"
-description                 : ""
+description                 : "Dynamics 365 Finance - Supply Chain - Commerce"
 paginate                    : 5 
 paginate_path               : /page:num/
 
