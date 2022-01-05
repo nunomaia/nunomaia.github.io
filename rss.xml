@@ -9,7 +9,7 @@ layout: null
         <link>{{ site.url }}{{ site.baseurl }}/</link>
         <pubDate>{{ site.time | date_to_rfc822 }}</pubDate>
         <lastBuildDate>{{ site.time | date_to_rfc822 }}</lastBuildDate>
-        <atom:link href="{{ site.url }}/rss.xml" rel="self" type="application/rss+xml" />
+        <atom:link href="{{ site.url }}rss.xml" rel="self" type="application/rss+xml" />
         <generator>Jekyll v{{ jekyll.version }}</generator>
         {% assign posts = site.posts %}
         {% assign posts_limit = site.feed.posts_limit | default: 20 %}
