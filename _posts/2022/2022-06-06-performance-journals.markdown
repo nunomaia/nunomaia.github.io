@@ -7,11 +7,9 @@ categories:
  - Finance 
 ---
 
-## Requirement
-
 Dynamics 365 General Journals were designed to handle large volume of rows.  It's difficult to define exactly the baseline line to classify a journal as a large volume. 
 
-Our case was post journal **500 000 ** lines in a 6 hours time window. A performance throughput of roughly 1389 lines per minute during posting. 
+Our case was post journal **500 000** lines in a 6 hours time window. A performance throughput of roughly 1389 lines per minute during posting. 
 
 The absolute numbers will vary in production environments due to various factors, configurations, dimensions per line, etc.
 
