@@ -1,0 +1,17 @@
+# Configure main menu and social menu
+
+[[social]]
+identifier = "linkedin"
+name = "Linkedin"
+url = "https://www.linkedin.com/in/nuno-maia-35a24b1/"
+
+[social.params]
+icon = "brand-linkedin"
+
+[[social]]
+identifier = "github"
+name = "GitHub"
+url = "https://github.com/nunomaia"
+
+[social.params]
+icon = "brand-github"
